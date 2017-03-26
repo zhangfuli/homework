@@ -1,0 +1,50 @@
+insert into dbo.departmenttable(departmentId,departmentname)
+	values('1122','采油厂');
+insert into dbo.departmenttable(departmentId,departmentname)
+	values('112201','采油一矿');
+insert into dbo.departmenttable(departmentId,departmentname)
+	values('112202','采油二矿');
+insert into dbo.departmenttable(departmentId,departmentname)
+	values('112201001','采油一矿一队');
+insert into dbo.departmenttable(departmentId,departmentname)
+	values('112201002','采油一矿二队');
+insert into dbo.departmenttable(departmentId,departmentname)
+	values('112201003','采油一矿三队');
+insert into dbo.departmenttable(departmentId,departmentname)
+	values('112202001','采油二矿一队');
+insert into dbo.departmenttable(departmentId,departmentname)
+	values('112202002','采油二矿二队');
+
+insert into dbo.welltable
+values ('y001','油井','112201001')
+insert into dbo.welltable
+values ('y002','油井','112201001')
+insert into dbo.welltable
+values ('y003','油井','112201002')
+insert into dbo.welltable
+values ('s001','水井','112201002')
+insert into dbo.welltable
+values ('y004','油井','112201003')
+insert into dbo.welltable
+values ('s002','水井','112201001')
+insert into dbo.welltable
+values ('s003','水井','112201001')
+insert into dbo.welltable
+values ('y005','油井','112202002')
+
+insert into dbo.dodepartmenttable
+values ('作业公司作业一队')
+insert into dbo.dodepartmenttable
+values ('作业公司作业二队')
+insert into dbo.dodepartmenttable
+values ('作业公司作业三队')
+
+
+insert into dbo.goodtable
+values ('wm001','材料一','吨')
+insert into dbo.goodtable
+values ('wm002','材料二','米')
+insert into dbo.goodtable
+values ('wm003','材料三','桶')
+insert into dbo.goodtable
+values ('wm004','材料四','袋')
