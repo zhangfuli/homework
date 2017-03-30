@@ -1,3 +1,62 @@
+//创建账本表
+create table billtable(
+	billId char(20),
+	predeparment char(20),
+	wellId char(20),
+	premoney money,
+	preperson char(20),
+	predate datetime,
+	starttime datetime,
+	overtime datetime,
+	dodepartment  char(20),
+	dowhat char(20),
+	personpay  money,
+	materialpay money,
+	equmoney money,
+	otherpay money,
+	allpay money,
+	payer char(20),
+	paydate datetime,
+	material1 char(20),
+	material2 char(20),
+	material3 char(20),
+	material4 char(20),	
+	inmoney money,
+	inpayer char(20),
+	indate datetime
+	
+)
+//材料费
+create table  materialpay  (
+	Sbill char(20),
+	goodId char(20),
+	number int,
+	price money
+)
+//单位代码表
+create table departmenttable(
+	departmentId char(20),
+	departmentname char(20)
+)
+//施工单位
+create table  dodepartmentname(
+	departmentname char(20)
+)  
+//油水井
+create table welltable(
+	wellId char(20),
+	wellkind char(4),
+	departmentID char(20)
+)
+
+
+//物码表
+create table  goodtable(
+	goodId char(20),
+	namesize char(20),
+	unit char(20)
+)  
+3.
 insert into dbo.departmenttable(departmentId,departmentname)
 	values('1122','采油厂');
 insert into dbo.departmenttable(departmentId,departmentname)
@@ -49,8 +108,173 @@ values ('wm003','材料三','桶')
 insert into dbo.goodtable
 values ('wm004','材料四','袋')
 
+4.
 insert into dbo.billtable
 values ('zy2016001','112201001','y001','10000.00','张三','2016-5-1'
 ,'2016-5-4','2016-5-25','作业公司作业一队','堵漏','2500.00','7000.00'
 ,'1000.00','1400.00','11900.00','李四','2016-5-26','2000.00','2000.00',
 '2000.00','1000.00','11900.00','王五','2016-5-28')
+
+insert into dbo.billtable(billId,predeparment,wellId,premoney,preperson,predate,starttime,overtime,
+dodepartment,dowhat,personpay,materialpay,equmoney,otherpay,allpay,payer,paydate,material1,
+material2,material3,inmoney,inpayer,indate)
+values ('zy2016002','112201002','y003','11000.00','张三','2016-5-1'
+,'2016-5-4','2016-5-23','作业公司作业二队','检泵','1500.00','6000.00'
+,'1000.00','2400.00','10900.00','李四','2016-5-26','2000.00','2000.00',
+'2000.00','10900.00','王五','2016-5-28')
+
+insert into dbo.billtable(billId,predeparment,wellId,premoney,preperson,predate,starttime,overtime,
+dodepartment,dowhat,personpay,materialpay,equmoney,otherpay,allpay,payer,paydate,material1,
+material2,material3,inmoney,inpayer,indate)
+values ('zy2016003','112201002','s001','10500.00','张三','2016-5-1'
+,'2016-5-6','2016-5-23','作业公司作业二队','调剖','2000.00','6500.00'
+,'500.00','1400.00','10400.00','李四','2016-5-26','2000.00','2000.00',
+'2500.00','10400.00','王五','2016-5-28')
+
+
+insert into dbo.billtable(billId,predeparment,wellId,premoney,preperson,predate,starttime,overtime,
+dodepartment,dowhat,personpay,materialpay,equmoney,otherpay,allpay,payer,paydate,material1,
+material2,material4,inmoney,inpayer,indate)
+values ('zy2016004','112202001','s002','12000.00','张三','2016-5-1'
+,'2016-5-4','2016-5-24','作业公司作业三队','解堵','2000.00','6000.00'
+,'1000.00','1600.00','10600.00','李四','2016-5-26','2000.00','2000.00',
+'2000.00','10600.00','赵六','2016-5-28')
+
+insert into dbo.billtable(billId,predeparment,wellId,premoney,preperson,predate,starttime,overtime,
+dodepartment,dowhat,personpay,materialpay,equmoney,otherpay,allpay,payer,paydate,material1,material2,material4)
+values ('zy2016005','112202002','y005','12000.00','张三','2016-5-1'
+,'2016-5-4','2016-5-28','作业公司作业三队','防砂','1000.00','7000.00'
+,'2000.00','1300.00','11300.00','李四','2016-6-1','2000.00','2000.00',
+'3000.00')
+
+6.
+BEGIN TRANSACTION 
+UPDATE dbo.billtable 
+SET personpay  = personpay  + 200,
+	allpay  = allpay + 200
+WHERE billId = 'zy2016005'
+
+DELETE FROM dbo.billtable 
+WHERE inmoney is NULL AND allpay is NOT NULL
+
+ROLLBACK TRANSACTION 
+
+*****************************实验4***************************
+1.
+create  index  Billpredate on dbo.billtable(predate)
+create  index  Billpaydate on dbo.billtable(paydate)
+create  index  Billindate on dbo.billtable(indate)
+2.
+drop index Billpredate on billtable
+drop index Billpaydate on billtable
+drop index Billindate on billtable
+3.
+(1)
+select *
+from billtable
+where predate>='2016-5-1' and predate<='2016-5-28' and allpay is not NULL and predeparment=(
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队'
+
+)
+
+zy2016003           	112201002           	s001                	10500.00	张三      	2016-05-01 00:00:00.000	2016-05-06 00:00:00.000	2016-05-23 00:00:00.000	作业公司作业二队    	调剖                	2000.00	6500.00	500.00	1400.00	10400.00	李四      	2016-05-26 00:00:00.000	2000.00             	2000.00             	2500.00             	NULL	10400.00	王五                	2016-05-28 00:00:00.000
+(2)
+select *
+from billtable
+where indate>='2016-5-1' and indate<='2016-5-28' and allpay is  not NULL and predeparment=(
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队'
+)
+
+zy2016003           	112201002           	s001                	10500.00	张三      	2016-05-01 00:00:00.000	2016-05-06 00:00:00.000	2016-05-23 00:00:00.000	作业公司作业二队    	调剖                	2000.00	6500.00	500.00	1400.00	10400.00	李四      	2016-05-26 00:00:00.000	2000.00             	2000.00             	2500.00             	NULL	10400.00	王五                	2016-05-28 00:00:00.000
+(3)
+select materialpay,material1,material2,material3,material4
+from billtable
+where paydate>='2016-5-1' and paydate<='2016-5-28' and allpay is  not NULL and predeparment=(
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队'
+)
+
+6500.00	2000.00             	2000.00             	2500.00             	NULL
+(4)
+select *
+from billtable
+where indate>='2016-5-1' and indate<='2016-5-28' and allpay is  not NULL and predeparment=(
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队'
+)
+
+zy2016003           	112201002           	s001                	10500.00	张三      	2016-05-01 00:00:00.000	2016-05-06 00:00:00.000	2016-05-23 00:00:00.000	作业公司作业二队    	调剖                	2000.00	6500.00	500.00	1400.00	10400.00	李四      	2016-05-26 00:00:00.000	2000.00             	2000.00             	2500.00             	NULL	10400.00	王五                	2016-05-28 00:00:00.000
+(5)
+select sum(premoney)
+from billtable
+where predate>='2016-5-1' and predate<='2016-5-28'and predeparment=(
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队'
+)
+
+21500.00
+(6)
+select sum(allpay)
+from billtable
+where paydate>='2016-5-1' and paydate<='2016-5-28'and predeparment=(
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队'
+)
+
+21300.00
+(7)
+select sum(inmoney)
+from billtable
+where indate>='2016-5-1' and indate<='2016-5-28'and predeparment=(
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队'
+)
+
+21300.00
+(8)
+select sum(inmoney)
+from billtable
+where predeparment in (
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队' or departmentname='采油一矿一队' 
+	or departmentname='采油一矿三队'
+)
+
+33200.00
+(9)
+select distinct inpayer
+from billtable
+where inpayer is not null
+
+王五                
+赵六                              
+(10)
+select *
+from billtable
+where paydate>='2016-5-1' and paydate<='2016-5-28' 
+and allpay is not null and inmoney is null
+
+空
+(11)
+select *
+from billtable
+where predeparment in (
+	select departmentId
+	from departmenttable
+	where departmentname='采油一矿二队'
+)
+order by inmoney desc 
+
+zy2016002           	112201002           	y003                	11000.00	张三      	2016-05-01 00:00:00.000	2016-05-04 00:00:00.000	2016-05-23 00:00:00.000	作业公司作业二队    	检泵                	1500.00	6000.00	1000.00	2400.00	10900.00	李四      	2016-05-26 00:00:00.000	2000.00             	2000.00             	2000.00             	NULL	10900.00	王五                	2016-05-28 00:00:00.000
+zy2016003           	112201002           	s001                	10500.00	张三      	2016-05-01 00:00:00.000	2016-05-06 00:00:00.000	2016-05-23 00:00:00.000	作业公司作业二队    	调剖                	2000.00	6500.00	500.00	1400.00	10400.00	李四      	2016-05-26 00:00:00.000	2000.00             	2000.00             	2500.00             	NULL	10400.00	王五                	2016-05-28 00:00:00.000
+(12)
