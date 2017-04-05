@@ -314,8 +314,7 @@ where inpayer is not null
 (10)
 select *
 from billtable
-where paydate>='2016-5-1' and paydate<='2016-5-28' 
-and allpay is not null and inmoney is null
+where indate is not between '2016-5-01' and '2016-5-28' 
 
 空
 (11)
@@ -390,15 +389,15 @@ where wellId in (
 (1)
 create table datatable(
 	dodepartmant char(20),
-	yearmonth   date,
+	yearmonth   cahr(20),
 	allmoney money
 )
 (2)
 insert 
 into dbo.datatable
-select dbo.billtable.dodepartment,paydate,sum(allpay)
+select dbo.billtable.dodepartment,concat(year(paydate),'-',month(paydate)),sum(allpay)
 from dbo.billtable
-group by dbo.billtable.dodepartment,paydate
+group by dbo.billtable.dodepartment,concat(year(paydate),'-',month(paydate))
 (3)
 BEGIN TRANSACTION 
 update dbo.billtable
@@ -425,3 +424,15 @@ where wellId in (
 	)
 )
 ROLLBACK TRANSACTION 
+************************************实验五*********************************
+1.
+(1)
+alter table dbo.datatable
+add remark char(20)
+(2)
+alter table dbo.datatable
+add primary key(dodepartmant)
+
+无法在表 'datatable' 中可为 Null 的列上定义 PRIMARY KEY 约束。
+消息 1750，级别 16，状态 0，第 1 行
+无法创建约束或索引。请参阅前面的错误。
