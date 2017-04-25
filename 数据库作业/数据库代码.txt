@@ -389,13 +389,13 @@ where wellId in (
 (1)
 create table datatable(
 	dodepartmant char(20),
-	yearmonth   cahr(20),
+	yearmonth   char(20),
 	allmoney money
 )
 (2)
 insert 
 into dbo.datatable
-select dbo.billtable.dodepartment,concat(year(paydate),'-',month(paydate)),sum(allpay)
+select distinct dbo.billtable.dodepartment,concat(year(paydate),'-',month(paydate)),sum(allpay)
 from dbo.billtable
 group by dbo.billtable.dodepartment,concat(year(paydate),'-',month(paydate))
 (3)
@@ -436,3 +436,231 @@ add primary key(dodepartmant)
 无法在表 'datatable' 中可为 Null 的列上定义 PRIMARY KEY 约束。
 消息 1750，级别 16，状态 0，第 1 行
 无法创建约束或索引。请参阅前面的错误。
+
+alter table dbo.datatable
+alter column dodepartmant char(20) not null
+alter table dbo.datatable
+alter column yearmonth char(20) not null
+alter table dbo.datatable
+alter column allmoney money not null
+
+alter table dbo.datatable
+add primary key(dodepartmant,yearmonth,allmoney)
+(3)
+delete
+from dbo.datatable
+
+drop table dbo.datatable
+(4)
+alter table dbo.billtable
+alter column billid char(20) not null
+alter table dbo.billtable
+add primary key(billid)
+
+alter table dbo.departmenttable
+alter column departmentId char(20) not null
+alter table dbo.departmenttable
+add primary key(departmentId)
+
+alter table dbo.dodepartmenttable
+alter column departmentname char(20) not null
+alter table dbo.dodepartmenttable
+add primary key(departmentname)
+
+alter table dbo.goodtable
+alter column goodId char(20) not null
+alter table dbo.goodtable
+add primary key(goodId)
+
+alter table dbo.materialpay
+alter column Sbill char(20) not null
+alter table dbo.materialpay
+alter column goodId char(20) not null
+alter table dbo.materialpay
+add primary key(Sbill,goodId)
+
+alter table dbo.welltable
+alter column wellId char(20) not null
+alter table dbo.welltable
+add primary key(wellId)
+
+2.(1)
+insert  into  materialpay  values('zy2016001','wm004',100,10)
+insert  into  materialpay  values('zy2016002',NULL,200,10)
+(2)
+insert  into  welltable  values('y007' ,  '油井'  , '112203002')
+insert  into  materialpay  values('zy2016007','wm006',100,10)
+(3)
+BEGIN TRANSACTION 
+update billtable
+set dodepartment = '作业公司作业五队'
+where billId='zy2016001'
+rollback TRANSACTION
+(4)
+BEGIN TRANSACTION 
+delete 
+from departmenttable
+where departmentId='112202002' and departmentname='采油二矿二队'
+rollback TRANSACTION
+(5)
+BEGIN tran
+update goodtable
+set goodId='wm04'
+where goodId = 'wm004' and namesize='材料四'  and unit='袋'
+rollback tran
+
+
+(3).
+alter table departmenttable
+alter column departmentname char(20) not null 
+alter table departmenttable
+add unique(departmentname)
+
+alter table welltable
+ADD CONSTRAINT wellcheck CHECK (wellkind='油井' or wellkind='水井')
+
+alter table dbo.materialpay
+alter column number int not null
+消息 515，级别 16，状态 2，第 1 行
+不能将值 NULL 插入列 'number'，表 'zyxt.dbo.materialpay'；列不允许有 Null 值。UPDATE 失败。
+语句已终止。
+
+alter table dbo.materialpay
+alter column price money not null
+
+alter table billtable
+add constraint datecheck check(starttime<=overtime)
+alter table billtable
+add constraint datecheck2 check(paydate<=indate)
+
+3.
+create view IS_proMaterial
+as
+select billId,predeparment,wellId,premoney,predate,starttime,overtime,dodepartment,dowhat,personpay,materialpay,equmoney,otherpay,allpay,payer,paydate,inmoney,inpayer,indate,goodId,number,price
+from billtable,materialpay
+where billId = Sbill
+
+select *
+from [IS_proMaterial]
+select distinct billId
+from [IS_proMaterial]
+
+Create view preView
+as
+select billId,predeparment,wellId,personpay,preperson,predate 
+from billtable
+
+insert 
+into [preView]
+values('zy2016008','112202002','y005',10000,'张三', '2016-07-02')
+
+****************************************实验六***********************************
+1.
+BEGIN TRANSACTION 
+insert into billtable
+values('zy2016006','112202002','y005',10000,'张三',
+'07-01-2016','07-04-2016','07-25-2016','作业公司作业一队',
+'堵漏',7000,2500,1000,1400,11900,'李四','07-28-2016',11900,
+'王五','07-28-2016')
+
+insert into materialpay
+values('zy2016006','wm001',200,10)
+
+insert into materialpay
+values ('zy2016006','wm002',200,10)
+
+insert into materialpay
+values ('zy2016006','wm003',200,10)
+
+insert into materialpay
+values ('zy2016006','wm004',200,10)
+
+commit
+
+2.
+USE zyxt;
+GO
+DECLARE cursor_bill CURSOR FOR
+SELECT billId,predeparment,wellId,premoney,preperson,predate,starttime,overtime,
+dodepartment,dowhat,personpay,materialpay,equmoney,otherpay,allpay,payer,paydate,inmoney,inpayer,indate
+FROM billtable;
+
+USE zyxt;
+GO
+open cursor_bill;
+FETCH NEXT FROM cursor_bill
+WHILE @@FETCH_STATUS=0
+BEGIN
+FETCH NEXT FROM cursor_bill
+END;
+
+3.
+//定义
+if (object_id('storeprocessing', 'P') is not null)
+    drop proc storeprocessing
+go
+create proc storeprocessing(
+    @departmentId char(20) output, --默认输入参数
+	@starttime datetime output,
+	@overtime datetime output,
+	@premoney money out,
+	@allpay money out,
+	@inmoney money out,
+	@noneAllmoney money out,
+	@noneInmoney money out
+    /*@name varchar(20) out, --输出参数
+    @age varchar(20) output--输入输出参数*/
+)
+as
+    select @departmentId = dodepartment, @starttime = starttime, @overtime = overtime,
+	@premoney = premoney,@allpay = allpay,@inmoney = inmoney  
+	from billtable 
+go
+
+-- 
+
+declare @noneAllmoney money,
+        @noneInmoey money,
+		@premoney money,
+		@allmoney money,
+		@inmoney money,
+		@departmentId char(20),
+		@starttime datetime,
+		@overtime datetime;
+set @noneAllmoney= @premoney - @allmoney;
+set @noneInmoey = @allmoney - @inmoney;
+
+select @departmentId ,@starttime,@overtime;
+print @departmentId + '单位' + CONVERT(varchar(100), @starttime, 1) + '时间---' + CONVERT(varchar(100), @overtime, 1) + '时间成本运行情况';
+
+///////////////////////////////////////////////
+if (object_id('storeprocessing', 'P') is not null)
+    drop proc storeprocessing
+go
+create proc storeprocessing(
+    @dodepartment char(20) output, 
+	@starttime datetime output,
+	@overtime datetime output
+	--@premoney money out,
+	--@allpay money out,
+	--@inmoney money out,
+	--@noneAllmoney money out,
+	--@noneInmoney money out
+    /*@name varchar(20) out, --输出参数
+    @age varchar(20) output--输入输出参数*/
+)
+as
+    select dodepartment,starttime, overtime
+	--@premoney = premoney,@allpay = allpay,@inmoney = inmoney  
+	from billtable
+	where dodepartment = @dodepartment and starttime =@starttime and overtime=@overtime
+go
+
+exec storeprocessing  '作业公司作业三队' ,'2016-5-4' ,'2016-5-24';
+declare @dodepartment char(20),
+		@starttime datetime,
+		@overtime datetime;
+
+
+select @dodepartment ,@starttime,@overtime;
+print @dodepartment + '单位' + CONVERT(varchar(100), @starttime, 1) + '时间---' + CONVERT(varchar(100), @overtime, 1) + '时间成本运行情况';
