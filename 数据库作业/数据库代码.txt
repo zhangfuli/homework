@@ -638,29 +638,38 @@ if (object_id('storeprocessing', 'P') is not null)
     drop proc storeprocessing
 go
 create proc storeprocessing(
-    @dodepartment char(20) output, 
+    @dodepartment varchar(20) output, 
 	@starttime datetime output,
 	@overtime datetime output
-	--@premoney money out,
-	--@allpay money out,
-	--@inmoney money out,
-	--@noneAllmoney money out,
-	--@noneInmoney money out
     /*@name varchar(20) out, --输出参数
     @age varchar(20) output--输入输出参数*/
 )
 as
-    select dodepartment,starttime, overtime
-	--@premoney = premoney,@allpay = allpay,@inmoney = inmoney  
+    select @dodepartment = dodepartment,@starttime = starttime, @overtime = overtime
 	from billtable
 	where dodepartment = @dodepartment and starttime =@starttime and overtime=@overtime
+
+	declare @premoney money,@allpay money,@inmoney money,@noneinmoney money,@nonejiesuan money
+	declare @departmentname char(20)
+	select @departmentname = departmentname
+	from dbo.departmenttable
+	where departmentId = @dodepartment
+
+	select @departmentname = departmentname
+	from dbo.departmenttable
+	where departmentId = @dodepartment
+
+	set @premoney=(select sum(premoney) from billtable  where predeparment like @dodepartment+'%' and (predate between @starttime and @overtime))
+	set @allpay=(select sum(allpay) from billtable  where predeparment like @dodepartment+'%' and (paydate between @starttime and @overtime))
+	set @inmoney=(select sum(inmoney) from billtable  where predeparment like @dodepartment+'%' and (indate between @starttime and @overtime))
+	set @nonejiesuan = @premoney - @allpay
+	set @noneinmoney = @allpay - @inmoney
+
+
+print @departmentname+'单位'+convert(varchar,@starttime,102)+'--'+convert(varchar,@overtime,102)+'成本运营情况' 
+print '预算金额 结算金额 入账金额 未结算金额 未入账金额' 
+print convert(varchar,@premoney)+'  '+convert(varchar,@allpay)+'  '+convert(varchar,@inmoney)+'  '+convert(varchar,@nonejiesuan)+'  '+convert(varchar,@noneinmoney)
 go
 
-exec storeprocessing  '作业公司作业三队' ,'2016-5-4' ,'2016-5-24';
-declare @dodepartment char(20),
-		@starttime datetime,
-		@overtime datetime;
-
-
-select @dodepartment ,@starttime,@overtime;
-print @dodepartment + '单位' + CONVERT(varchar(100), @starttime, 1) + '时间---' + CONVERT(varchar(100), @overtime, 1) + '时间成本运行情况';
+exec storeprocessing @dodepartment='1122',@starttime='2016-4-10',@overtime='2016-5-25';
+exec storeprocessing @dodepartment='112201',@starttime='2016-5-1',@overtime='2016-6-1';
