@@ -1,4 +1,4 @@
-//创建账本表
+创建账本表
 create table billtable(
 	billId char(20),
 	predeparment char(20),
@@ -26,31 +26,30 @@ create table billtable(
 	indate datetime
 	
 )
-//材料费
+材料费
 create table  materialpay  (
 	Sbill char(20),
 	goodId char(20),
 	number int,
 	price money
 )
-//单位代码表
+单位代码表
 create table departmenttable(
 	departmentId char(20),
 	departmentname char(20)
 )
-//施工单位
+施工单位
 create table  dodepartmentname(
 	departmentname char(20)
 )  
-//油水井
+油水井
 create table welltable(
 	wellId char(20),
 	wellkind char(4),
 	departmentID char(20)
 )
 
-
-//物码表
+物码表
 create table  goodtable(
 	goodId char(20),
 	namesize char(20),
@@ -236,7 +235,7 @@ zy2016003           	112201002           	s001                	10500.00	张三  
 (2)
 select *
 from billtable
-where indate>='2016-5-1' and indate<='2016-5-28' and allpay is  not NULL and predeparment=(
+where paydate>='2016-5-1' and paydate<='2016-5-28' and allpay is  not NULL and predeparment=(
 	select departmentId
 	from departmenttable
 	where departmentname='采油一矿二队'
@@ -311,7 +310,7 @@ where inpayer is not null
 
 王五                
 赵六                              
-(10)
+//(10)
 select *
 from billtable
 where indate is not between '2016-5-01' and '2016-5-28' 
@@ -339,7 +338,7 @@ group by dodepartment
 作业公司作业三队    	10600.00
 作业公司作业一队    	11900.00
 (13)
-select *
+select billtable.*,material.num,material.price
 from dbo.billtable
 where billId in (
 	select Sbill
@@ -347,9 +346,6 @@ where billId in (
 	where goodId = 'material3' and price>=2000 
 )
 
-zy2016001           	112201001           	y001                	10000.00	张三      	2016-05-01 00:00:00.000	2016-05-04 00:00:00.000	2016-05-25 00:00:00.000	作业公司作业一队    	堵漏                	2500.00	7000.00	1000.00	1400.00	11900.00	李四      	2016-05-26 00:00:00.000	2000.00             	2000.00             	2000.00             	1000.00             	11900.00	王五                	2016-05-28 00:00:00.000
-zy2016003           	112201002           	s001                	10500.00	张三      	2016-05-01 00:00:00.000	2016-05-06 00:00:00.000	2016-05-23 00:00:00.000	作业公司作业二队    	调剖                	2000.00	6500.00	500.00	1400.00	10400.00	李四      	2016-05-26 00:00:00.000	2000.00             	2000.00             	2500.00             	NULL	10400.00	王五                	2016-05-28 00:00:00.000
-zy2016002           	112201002           	y003                	11000.00	张三      	2016-05-01 00:00:00.000	2016-05-04 00:00:00.000	2016-05-23 00:00:00.000	作业公司作业二队    	检泵                	1500.00	6000.00	1000.00	2400.00	10900.00	李四      	2016-05-26 00:00:00.000	2000.00             	2000.00             	2000.00             	NULL	10900.00	王五                	2016-05-28 00:00:00.000
 (14)
 select billId
 from dbo.billtable
@@ -392,12 +388,19 @@ create table datatable(
 	yearmonth   char(20),
 	allmoney money
 )
-(2)
+(2)  ---01
 insert 
 into dbo.datatable
 select distinct dbo.billtable.dodepartment,concat(year(paydate),'-',month(paydate)),sum(allpay)
 from dbo.billtable
 group by dbo.billtable.dodepartment,concat(year(paydate),'-',month(paydate))
+
+
+insert 
+into dbo.datatable
+select distinct billtable.dodepartment,concat(year(paydate),'-',right('00'+convert(varchar,month(GETDATE())),2),sum(allpay)
+from dbo.billtable
+group by dbo.billtable.dodepartment,concat(year(paydate),'-',right('00'+convert(varchar,month(GETDATE())),2))
 (3)
 BEGIN TRANSACTION 
 update dbo.billtable
@@ -555,7 +558,7 @@ into [preView]
 values('zy2016008','112202002','y005',10000,'张三', '2016-07-02')
 
 ****************************************实验六***********************************
-1.
+//1.
 BEGIN TRANSACTION 
 insert into billtable
 values('zy2016006','112202002','y005',10000,'张三',
@@ -577,16 +580,16 @@ values ('zy2016006','wm004',200,10)
 
 commit
 
-2.
-USE zyxt;
-GO
+//2.
+
+
 DECLARE cursor_bill CURSOR FOR
 SELECT billId,predeparment,wellId,premoney,preperson,predate,starttime,overtime,
 dodepartment,dowhat,personpay,materialpay,equmoney,otherpay,allpay,payer,paydate,inmoney,inpayer,indate
 FROM billtable;
 
-USE zyxt;
-GO
+
+
 open cursor_bill;
 FETCH NEXT FROM cursor_bill
 WHILE @@FETCH_STATUS=0
@@ -595,59 +598,17 @@ FETCH NEXT FROM cursor_bill
 END;
 
 3.
-//定义
 if (object_id('storeprocessing', 'P') is not null)
     drop proc storeprocessing
 go
 create proc storeprocessing(
-    @departmentId char(20) output, --默认输入参数
-	@starttime datetime output,
-	@overtime datetime output,
-	@premoney money out,
-	@allpay money out,
-	@inmoney money out,
-	@noneAllmoney money out,
-	@noneInmoney money out
-    /*@name varchar(20) out, --输出参数
-    @age varchar(20) output--输入输出参数*/
+    @dodepartment varchar(20) , 
+	@starttime datetime ,
+	@overtime datetime 
+   
 )
 as
-    select @departmentId = dodepartment, @starttime = starttime, @overtime = overtime,
-	@premoney = premoney,@allpay = allpay,@inmoney = inmoney  
-	from billtable 
-go
-
--- 
-
-declare @noneAllmoney money,
-        @noneInmoey money,
-		@premoney money,
-		@allmoney money,
-		@inmoney money,
-		@departmentId char(20),
-		@starttime datetime,
-		@overtime datetime;
-set @noneAllmoney= @premoney - @allmoney;
-set @noneInmoey = @allmoney - @inmoney;
-
-select @departmentId ,@starttime,@overtime;
-print @departmentId + '单位' + CONVERT(varchar(100), @starttime, 1) + '时间---' + CONVERT(varchar(100), @overtime, 1) + '时间成本运行情况';
-
-///////////////////////////////////////////////
-if (object_id('storeprocessing', 'P') is not null)
-    drop proc storeprocessing
-go
-create proc storeprocessing(
-    @dodepartment varchar(20) output, 
-	@starttime datetime output,
-	@overtime datetime output
-    /*@name varchar(20) out, --输出参数
-    @age varchar(20) output--输入输出参数*/
-)
-as
-    select @dodepartment = dodepartment,@starttime = starttime, @overtime = overtime
-	from billtable
-	where dodepartment = @dodepartment and starttime =@starttime and overtime=@overtime
+    
 
 	declare @premoney money,@allpay money,@inmoney money,@noneinmoney money,@nonejiesuan money
 	declare @departmentname char(20)
@@ -662,6 +623,8 @@ as
 	set @premoney=(select sum(premoney) from billtable  where predeparment like @dodepartment+'%' and (predate between @starttime and @overtime))
 	set @allpay=(select sum(allpay) from billtable  where predeparment like @dodepartment+'%' and (paydate between @starttime and @overtime))
 	set @inmoney=(select sum(inmoney) from billtable  where predeparment like @dodepartment+'%' and (indate between @starttime and @overtime))
+	
+//找不到情况
 	set @nonejiesuan = @premoney - @allpay
 	set @noneinmoney = @allpay - @inmoney
 
@@ -673,3 +636,157 @@ go
 
 exec storeprocessing @dodepartment='1122',@starttime='2016-4-10',@overtime='2016-5-25';
 exec storeprocessing @dodepartment='112201',@starttime='2016-5-1',@overtime='2016-6-1';
+
+4.
+(1)  //for
+if (object_id('com', 'tr') is not null)
+    drop trigger com
+go
+create trigger com
+on billtable
+    after insert 
+as
+    --定义变量
+    declare @materialpay money, @equmoney money, @personpay money,@otherpay money,@allpay money,@billId char(20);
+    --在inserted表中查询已经插入记录信息
+    select @billId = billId,@materialpay = materialpay, @equmoney = equmoney ,@personpay = personpay,@otherpay = otherpay
+	from inserted
+	
+		set @allpay = @materialpay + @equmoney + @personpay + @otherpay;   
+		update billtable
+		set allpay = @allpay
+		where billId = @billId
+		print @allpay   
+go
+
+insert 
+into  billtable(billId,materialpay,equmoney,personpay,otherpay)
+values (20,1,1,1,1)
+(2)
+if (object_id('up', 'tr') is not null)
+    drop trigger up
+go
+create trigger up
+on billtable
+    after update 
+as
+    --定义变量
+    declare @materialpay money, @equmoney money, @personpay money,@otherpay money,@allpay money,@billId char(20);
+    select @billId = billId,@materialpay = materialpay, @equmoney = equmoney ,@personpay = personpay,@otherpay = otherpay
+	from inserted
+	
+		set @allpay = @materialpay + @equmoney + @personpay + @otherpay;   
+		update billtable
+		set allpay = @allpay
+		where billId = @billId
+		print @allpay   
+go
+
+update billtable 
+set materialpay = '2' 
+where billId = '20'
+(3)
+if (object_id('de', 'tr') is not null)
+    drop trigger de
+go
+create trigger de
+on billtable
+    instead of delete 
+as
+    --定义变量
+    declare @Sbill char(20);
+    select @Sbill = billId
+	from deleted
+	
+	delete
+	from materialpay
+	where Sbill = @Sbill   
+go
+
+delete
+from billtable
+where billId = 'zy2016001'
+
+*************************************实验七*********************************
+1.
+create view IS_yikuang
+as
+select billId,predeparment,wellId,premoney,predate,starttime,overtime,dodepartment,dowhat,personpay,materialpay,equmoney,otherpay,allpay,payer,paydate,inmoney,inpayer,indate,goodId,number,price
+from billtable,materialpay
+where predeparment like '112201%'
+
+创建用户
+create login user11 with password='1234', default_database=zyxt
+create user user11 for login user11 with default_schema=dbo
+
+grant select
+on IS_yikuang
+to user11
+
+
+//setuser  回到管理员
+
+
+setuser 'user11'
+select *
+from [IS_yikuang]
+
+
+create login user22 with password='1234', default_database=zyxt
+create user user22 for login user22 with default_schema=dbo
+setuser 'user22'
+select *
+from [IS_yikuang]
+
+拒绝了对对象 'IS_yikuang' (数据库 'zyxt'，架构 'dbo')的 SELECT 权限。
+
+(2).
+create login user12 with password='1234', default_database=zyxt
+create user user12 for login user12 with default_schema=dbo
+
+setuser 'user12'
+exec storeprocessing @dodepartment='1122',@starttime='2016-4-10',@overtime='2016-6-25';
+
+拒绝了对对象 'billtable' (数据库 'zyxt'，架构 'dbo')的 EXECUTE 权限。
+
+
+
+GRANT EXECUTE ON storeprocessing
+TO user12; 
+exec storeprocessing @dodepartment='1122',@starttime='2016-4-10',@overtime='2016-6-25';
+
+(3).
+if (object_id('worktime', 'tr') is not null)
+    drop trigger worktime
+go
+create trigger worktime
+on billtable
+for update
+
+as
+
+declare @now char(6)
+
+SET LANGUAGE N'Simplified Chinese' --简体中文
+
+select @now=datename(weekday, getdate())
+--print @now
+
+if (@now ='星期六' or @now ='星期日')
+begin	
+    print  '不在工作日';
+    rollback transaction
+end
+go
+
+update billtable
+set materialpay = '2'
+where billId = '20'
+
+
+
+若不在工作日
+
+不在工作日
+消息 3609，级别 16，状态 1，过程 up，行 11 [批起始行 22]
+事务在触发器中结束。批处理已中止。
