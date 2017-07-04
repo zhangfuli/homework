@@ -11,7 +11,7 @@
 
 <%@ page import="java.util.List" %>
 <%@ page import="com.kms.model.Role" %>
-
+<%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
 
 
 <%--
@@ -24,75 +24,75 @@
  --%>
 <%--放java类级代码  全局--%>
 <%!
-  int global = 10;
+    int global = 10;
 %>
 
 
 <%--下面是放在一个方法里的--%>
 <%--放java片段代码--%>
 <html>
-  <head>
+<head>
     <title>$Title$</title>
-  </head>
-  <body>
+</head>
+<body>
 
-    <%
-      List<Role>  lrs = null;
-      Object o = request.getAttribute("lrs");
-      if(o!=null){
+<%
+    List<Role>  lrs = null;
+    Object o = request.getAttribute("lrs");
+    if(o!=null){
         lrs = (List<Role>) o;
-      }
-      request.setAttribute("role", lrs.get(0));
-    %>
-    <table>
-      <tr>
+    }
+    request.setAttribute("role", lrs.get(0));
+%>
+<table>
+    <tr>
         <th>id</th>
         <th>depname</th>
         <th>loc</th>
-      </tr>
-      <%
+    </tr>
+    <%
         for(int i = 0; i < lrs.size(); i++){
-          Role r = lrs.get(i);
-          %>
-            <tr>
-              <td><%= r.getDepno()%></td>
-              <td><%= r.getDepname()%></td>
-              <td><%= r.getLoc()%></td>
-            </tr>
-          <%
+            Role r = lrs.get(i);
+    %>
+    <tr>
+        <td><%= r.getDepno()%></td>
+        <td><%= r.getDepname()%></td>
+        <td><%= r.getLoc()%></td>
+    </tr>
+    <%
         }
-      %>
-      <tr>
+    %>
+    <tr>
         <td></td>
-      </tr>
+    </tr>
 
-    </table>
+</table>
 
 
-    <p>EL表达式</p>
-    <table>
-      <tr>
+<p>EL表达式</p>
+<table>
+    <tr>
         <th>id</th>
         <th>depname</th>
         <th>loc</th>
-      </tr>
-      <tr>
+    </tr>
+    <tr>
         <td>${requestScope.role.depno}</td>
         <td>${requestScope.role.depname}</td>
         <td>${requestScope.role.loc}</td>
-      </tr>
-    </table>
+    </tr>
+</table>
 
-    <!--
-      Test内放的内容
-      基本的逻辑运算
-      判断一个对象是否为null   XXX == null
-      判断为空     empty  XXX
-    -->
-  
-
+<!--
+  Test内放的内容
+  基本的逻辑运算
+  判断一个对象是否为null   XXX == null
+  判断为空     empty  XXX
+-->
 
 
-  </body>
+
+
+</body>
 </html>
 

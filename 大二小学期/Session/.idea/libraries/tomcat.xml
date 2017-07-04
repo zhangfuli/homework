@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="tomcat">
+    <CLASSES>
+      <root url="file://E:/xampp/xampp/tomcat" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://E:/xampp/xampp/tomcat/webapps/docs/appdev/sample/src" />
+      <root url="file://E:/xampp/xampp/tomcat/webapps/examples/WEB-INF/classes" />
+      <root url="file://E:/xampp/xampp/tomcat/webapps/examples/WEB-INF/jsp/applet" />
+      <root url="file://E:/xampp/xampp/tomcat/webapps/examples/jsp/plugin/applet" />
+      <root url="file://E:/xampp/xampp/tomcat/work/Catalina/localhost/_" />
+    </SOURCES>
+  </library>
+</component>

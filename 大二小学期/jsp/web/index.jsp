@@ -8,10 +8,11 @@
 --%>
 
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <%@ page import="java.util.List" %>
 <%@ page import="com.kms.model.Role" %>
-<%@ page import="java.lang.reflect.Array" %>
+
+
 
 <%--
   <%@   %>   指令语法
@@ -41,13 +42,7 @@
       if(o!=null){
         lrs = (List<Role>) o;
       }
-
-
       request.setAttribute("role", lrs.get(0));
-
-//      Array al = new Array;
-
-//      request.setAttribute("al", al);
     %>
     <table>
       <tr>
@@ -86,9 +81,6 @@
         <td>${requestScope.role.depname}</td>
         <td>${requestScope.role.loc}</td>
       </tr>
-      <tr>
-        <td></td>
-      </tr>
     </table>
 
     <!--
@@ -97,14 +89,10 @@
       判断一个对象是否为null   XXX == null
       判断为空     empty  XXX
     -->
-  <%--<c:if test="${ 1==1 }">--%>
-    <%--<h1>我爱</h1>--%>
-  <%--</c:if>--%>
 
 
-    <%--<c:if test="${ empty requestScope.al }">--%>
-      <%--<h1>我爱</h1>--%>
-    <%--</c:if>--%>
+
+
   </body>
 </html>
 
