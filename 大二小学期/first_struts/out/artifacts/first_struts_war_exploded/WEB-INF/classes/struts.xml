@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!--为工程引入dtd文件，-代码补全-->
+<struts><!--struts标签是文件的根标签-->
+    <!--constant 定义项目常量-->
+    <constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
+    <constant name="struts.devMode" value="true"></constant>
+
+
+    <!--
+        package 标签是action的外围标签，功能类似于类的包
+        name  属性，类似于包名，不能重复
+        namespace 定义action的url路径 文件夹包名   / 是webapp的根
+        extends 定义package的父包，复用父包的配置信息
+    -->
+    <package name="default" namespace="/" extends="struts-default">
+
+
+        <!--
+            action 定义类的方法和url路径的映射关系
+            name 页面名称；url = namespace + / + name.action
+            class 定义url和类的映射关系
+            method 定义url 和类的方法映射
+        -->
+        <action name="hl" class="com.kms.action.HelloWorldAction" method="execute">
+            <result name="success">/view/hl.jsp</result>
+        </action>
+
+        <action name="login" class="com.kms.action.LoginAction" method="login">
+            <result name="success">/view/ok.jsp</result>
+        </action>
+
+        <action name="helloexactionsupport" class="com.kms.action.HelloExActionSupport" method="execute">
+            <result name="success">/view/ok.jsp</result>
+        </action>
+    </package>
+    <!--<include file="com/kms/action/struts.xml"></include>-->
+
+
+
+
+
+    <package name="_mysql" namespace="/mysql" extends="struts-default">
+        <!--      动态方法   为true   -->
+        <action name="role" class="com.mysql.RoleDmiAction">
+            <result>/view/mysql/ok.jsp</result>
+        </action>
+        <!--http://   localhost:8080   /mysql   /role_update.action-->
+        <!--    *_*    *{1}_*{2}  -->
+        <action name="role_*" class="com.mysql.RoleDmiAction" method="{1}">
+            <result name="success">/view/mysql/ok.jsp</result>
+        </action>
+
+
+        <action name="rf" class="com.mysql.RoleFormAction">
+            <result>/view/mysql/ok.jsp</result>
+        </action>
+
+
+        <action name="sql_*" class="com.mysql.model.DeptAction" method="{1}">
+            <result name="success">/view/mysql/{1}.jsp</result>
+        </action>
+    </package>
+
+</struts>
