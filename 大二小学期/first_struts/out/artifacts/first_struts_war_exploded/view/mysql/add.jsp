@@ -16,9 +16,9 @@
     <meta http-equiv="Content-Type" charset="UTF-8">
 </head>
 <body>
-    <form action="addrole.action" method="post">
-        name: <input type="text" name="rnm"><br>
-        <input type="submit" value="提交">
+    <form action="sql_add.action" method="get">
+        name: <input type="text" name="rnm" value="测试"><br>
+        <button type="submit">提交</button>
     </form>
 </body>
 </html>

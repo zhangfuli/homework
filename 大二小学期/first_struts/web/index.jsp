@@ -37,6 +37,7 @@
 
     数据库操作
     <a href="mysql/sql_list.action">查询</a>
+    <a href="mysql/sql_add.action">添加</a>
 
 </body>
 </html>

@@ -3,12 +3,10 @@ package com.mysql.dao;
 
 
 import com.mysql.model.Dept;
+import com.mysql.model.Role;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +50,39 @@ public class ListDao extends BasicDao{
         return lrs;
     }
 
+
+
+    /**
+    *
+    * 新增对象到T_ROLE
+    *
+    * */
+    public static int add(String role){
+        int i = 0;
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        String sql = "insert into t_role(rnm)\n" +
+                "VALUES (  ?  ) ";
+
+        try{
+            connection = getConnect();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1,role);
+            i = statement.executeUpdate();
+            return i;
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            try{
+                connection.close();
+            }catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return i;
+    }
     @Test()
     public void Test(){
         Connection connection = null;

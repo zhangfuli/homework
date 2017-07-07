@@ -24,20 +24,21 @@
         <th>depno</th>
         <th>depname</th>
         <th>loc</th>
+        <th>操作</th>
     </thead>
     <tbody>
-
-        <%--<c:forEach items ="${ deps }" var="b">--%>
-
-        <%--</c:forEach>--%>
         <s:iterator  value="#request.deps" var="dep">
             <tr>
                 <td><s:property value='#dep.depno'/></td>
                 <td><s:property value='#dep.depname'/></td>
                 <td><s:property value='#dep.loc'/></td>
+                <td>
+                        ${ dep.depno }
+                    <a href="">编辑</a>
+                    <a href="">删除</a>
+                </td>
             </tr>
         </s:iterator>
-
     </tbody>
 </table>
 
